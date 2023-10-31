@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password Page</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            border-style: border-box;
+        }
+
+        #outer {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+        }
+
+        h1 {
+            color: white;
+            font-size: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+            background-color: green;
+        }
+
+        p {
+            color: red;
+            margin-top: 5px;
+        }
+
+        #home {
+            height: 40px;
+            border-radius: 10px;
+            padding: 5px;
+            width: 75px;
+            margin-top: 10px;
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            border: none;
+            text-decoration: none;
+            background-color: blue;
+            color: white;
+            cursor: pointer;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+
+        .container h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn-container {
+            text-align: center;
+        }
+
+        .btn-container button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Welcome to the portal</h1>
+    <a href="/"><button id="home">Home</button></a>
+    <div id="outer">
+        <div class="container">
+            <h2>Forgot Password</h2>
+            <form method="POST" action="/changepass">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email">
+                </div>
+                <div class="btn-container">
+                    <button type="submit">Submit</button>
+                </div>
+                <p>
+                    <%= data %>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

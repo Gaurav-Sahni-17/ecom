@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+#home{
+  margin-right:10px;
+  height: 40px;
+   width:75px; 
+   margin-top:10px;
+    border:none;
+    text-decoration: none;
+    background-color: blue;  
+     color:white;
+  cursor: pointer;
+  border-radius: 10px;
+    padding:5px;
+}
+#top{
+  display:flex;
+   justify-content:space-between;
+    align-items:center;
+     height:125px;
+      background-color:greenyellow;
+}
+#username{
+  font-size:25px; 
+  width:auto;
+}
+#toggle{
+  width:25px;
+   margin-right:50px;
+}
+#heading{
+  color:white; 
+  font-size:50px;
+}
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="top">
+        <div>
+            <div class="btn-group">
+                <button type="button" id="username" class="btn btn-primary"><%= username %></button>
+                <button type="button" id="toggle" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="/logout">Logout</a></li>
+                  <li><a href="/pass">Change Password</a></li>
+                </ul>
+              </div>
+        </div>
+     <h1 id="heading">Wow Bazaar</h1>
+        <a href="/"><button id=home >
+            Home
+            </button></a>
+    </div>
+</body>
+</html>

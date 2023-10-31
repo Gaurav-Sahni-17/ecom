@@ -1,0 +1,9 @@
+module.exports=function(req,res){
+    if(req.session.user.role==='seller')
+        {
+            res.render("requests",{username:req.session.user.username})
+        }
+    else{
+            res.render("access");
+        }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders management Panel</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <div id="buttondiv" class="btn-group">
+            <button type="button" id="username" class="btn btn-primary">
+                <%= username %>
+            </button>
+            <button type="button" id="toggle" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="/logout">Logout</a></li>
+                <li><a href="/pass">Change Password</a></li>
+            </ul>
+        </div>
+        <a href="/"><button id="home">Home</button></a>
+        <h1>Order management</h1>
+    </header>
+    <div class="container" id="container">
+    </div>
+    <script>
+        let container = document.getElementById("container");
+        container.innerHTML = "";
+        const request2 = new XMLHttpRequest();
+        request2.open("GET", "/orderforcity");
+        request2.send();
+        request2.addEventListener("load", () => {
+            const orders = JSON.parse(request2.response);
+            const request1 = new XMLHttpRequest();
+            request1.open("GET", "/orderforstate");
+            request1.send();
+            let table = document.createElement('table');
+            let heading = document.createElement('h2');
+            heading.textContent = "Order Requests";
+            createHeadingRow(table, 1);
+            let tbody = document.createElement('tbody');
+            if (orders.length === 0) {
+                tbody.innerHTML = "<h4>No Orders Available</h4>";
+                tbody.style.color = "red";
+            }
+            for (let i = 0; i < orders.length; i++) {
+                let order = orders[i];
+                createRequestTableRow(tbody, order);
+            }
+            table.appendChild(tbody);
+            container.appendChild(heading);
+            container.appendChild(table);
+            request1.addEventListener("load", () => {
+                const orders2 = JSON.parse(request1.response);
+                const request3 = new XMLHttpRequest();
+                request3.open("GET", "/orderforuser");
+                request3.send();
+                let table = document.createElement('table');
+                let heading = document.createElement('h2');
+                heading.textContent = "Upcoming Orders";
+                let tbody = document.createElement('tbody');
+                createHeadingRow(table);
+                if (orders2.length === 0) {
+                    tbody.innerHTML = "<h4>No Upcoming Orders</h4>";
+                    tbody.style.color = "red";
+                }
+                for (let i = 0; i < orders2.length; i++) {
+                    let order = orders2[i];
+                    createDispatchTableRow(tbody, order);
+                }
+                table.appendChild(tbody);
+                container.appendChild(heading);
+                container.appendChild(table);
+                request3.addEventListener("load", () => {
+                    const orders3 = JSON.parse(request3.response);
+                    let table = document.createElement('table');
+                    let heading = document.createElement('h2');
+                    heading.textContent = "Dispatched Products";
+                    let tbody = document.createElement('tbody');
+                    tbody.setAttribute("id", "dispatchtable");
+                    createHeadingRow(table);
+                    if (orders3.length === 0) {
+                        tbody.innerHTML = "<h4>No Products Dispatched Yet</h4>";
+                        tbody.style.color = "red";
+                    }
+                    for (let i = 0; i < orders3.length; i++) {
+                        let order = orders3[i];
+                        createDispatchTableRow(tbody, order);
+                    }
+                    table.appendChild(tbody);
+                    container.appendChild(heading);
+                    container.appendChild(table);
+                })
+            })
+        })
+        function createHeadingRow(table, count) {
+            let thead = document.createElement("thead");
+            let tr = document.createElement("tr");
+            let th1 = document.createElement("th");
+            th1.textContent = "Order ID";
+            let th2 = document.createElement("th");
+            th2.textContent = "Product ID";
+            let th3 = document.createElement("th");
+            th3.textContent = "Product Name";
+            let th4 = document.createElement("th");
+            th4.textContent = "Image";
+            let th5 = document.createElement("th");
+            th5.textContent = "Quantity";
+            let th6 = document.createElement("th");
+            th6.textContent = "City";
+            tr.appendChild(th1);
+            tr.appendChild(th2);
+            tr.appendChild(th3);
+            tr.appendChild(th4);
+            tr.appendChild(th5);
+            tr.appendChild(th6);
+            if (count) {
+                let th8 = document.createElement("th");
+                th8.textContent = "Action";
+                tr.appendChild(th8);
+            }
+            thead.appendChild(tr);
+            table.appendChild(thead);
+        }
+        function createDispatchTableRow(tbody, order) {
+            let tr2 = document.createElement("tr");
+            let td1 = document.createElement("td");
+            td1.textContent = order.order_id;
+            let td2 = document.createElement("td");
+            td2.textContent = order.product_id;
+            let td3 = document.createElement("td");
+            td3.textContent = order.name;
+            let td4 = document.createElement("td");
+            let image = document.createElement('img');
+            image.src = order.image;
+            td4.appendChild(image);
+            let td5 = document.createElement("td");
+            td5.textContent = order.quantity;
+            let td6 = document.createElement("td");
+            td6.textContent = order.city;
+            tr2.appendChild(td1);
+            tr2.appendChild(td2);
+            tr2.appendChild(td3);
+            tr2.appendChild(td4);
+            tr2.appendChild(td5);
+            tr2.appendChild(td6);
+            tbody.appendChild(tr2);
+        }
+        function createRequestTableRow(tbody, order) {
+            let tr2 = document.createElement("tr");
+            let td1 = document.createElement("td");
+            td1.textContent = order.order_id;
+            let td2 = document.createElement("td");
+            td2.textContent = order.product_id;
+            let td3 = document.createElement("td");
+            td3.textContent = order.name;
+            let td4 = document.createElement("td");
+            let image = document.createElement('img');
+            image.src = order.image;
+            td4.appendChild(image);
+            let td5 = document.createElement("td");
+            td5.textContent = order.quantity;
+            let td6 = document.createElement("td");
+            td6.textContent = order.city;
+            let td8 = document.createElement("td");
+            let button = document.createElement("button");
+            button.textContent = "Dispatch";
+            button.addEventListener("click", () => {
+                const request = new XMLHttpRequest();
+                request.open("POST", "/dispatchcity");
+                request.setRequestHeader("Content-Type", "application/json");
+                request.send(JSON.stringify({ id: order.order_id, email: order.email }));
+                request.addEventListener("load", () => {
+                    tr2.remove();
+                    let dispatchtable = document.getElementById("dispatchtable");
+                    if (dispatchtable.style.color === "red") {
+                        dispatchtable.style.color = "black";
+                        dispatchtable.innerHTML = "";
+                    }
+                    createDispatchTableRow(dispatchtable, order);
+                    swal({
+                        title: "Order Dispatched Successfully",
+                        icon: "success",
+                    });
+                    if (tbody.childElementCount === 0) {
+                        tbody.innerHTML = "<h4>No More Orders Available</h4>";
+                        tbody.style.color = "red";
+                    }
+                })
+            })
+            td8.appendChild(button);
+            tr2.appendChild(td1);
+            tr2.appendChild(td2);
+            tr2.appendChild(td3);
+            tr2.appendChild(td4);
+            tr2.appendChild(td5);
+            tr2.appendChild(td6);
+            tr2.appendChild(td8);
+            tbody.appendChild(tr2);
+        }
+    </script>
+</body>
+
+</html>

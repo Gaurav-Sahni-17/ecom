@@ -1,0 +1,39 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f8f8f8;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    font-size: 10em;
+    margin: 0;
+    color: #2ecc71; /* Green color */
+}
+
+p {
+    font-size: 1.5em;
+    margin-top: 0.5em;
+    color: #34495e; /* Dark blue color */
+}
+
+a {
+    display: inline-block;
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    text-decoration: none;
+    color: #fff;
+    background-color: #3498db; /* Blue color */
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+a:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}

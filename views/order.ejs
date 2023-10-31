@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Page</title>
+    <link rel="stylesheet" href="product.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<body>
+    <%- include("partials/header",{username:username} ) %>
+        <h1 id="cartheading">My Orders</h1>
+        <a href="/product"><button id="showcart" style="margin-right:20px; width:75px;">Back</button></a>
+        <div id="product-container">
+        </div>
+        <script>
+            const productContainer = document.getElementById("product-container");
+            const request = new XMLHttpRequest();
+            request.open("GET", "/getorder");
+            request.send();
+            request.addEventListener("load", () => {
+                const products = JSON.parse(request.response);
+                for (let i = 0; i < products.length; i++) {
+                    const product = products[i];
+                    const productCard = document.createElement("div");
+                    productCard.classList.add("product-card");
+                    productCard.style.width = "300px";
+                    let img = document.createElement("img");
+                    img.src = product.image;
+                    img.setAttribute("class", "product-image");
+                    let h3 = document.createElement("h3");
+                    h3.textContent = product.name;
+                    let h2 = document.createElement("h3");
+                    h2.textContent = product.price + "/-";
+                    let quantity = document.createElement("h4");
+                    quantity.textContent = "Quantity: " + product.quantity;
+                    let status = document.createElement("h4");
+                    status.textContent = "Status: " + product.status;
+                    status.style.fontWeight = "700";
+                    let date = document.createElement("h6");
+                    date.textContent = "Order Time: " + product.date;
+                    date.style.fontWeight = "700";
+                    let cancel = document.createElement("button");
+                    cancel.setAttribute("id", "cancel");
+                    cancel.textContent = "Cancel Order";
+                    let id = product.order_id;
+                    cancel.addEventListener("click", () => {
+                        swal({
+                            title: "Are you sure?",
+                            icon: "warning",
+                            showCancelButton: true,
+                            buttons: ["No", "Yes"],
+                            dangerMode: true
+                        }).then(
+                            function (isConfirm) {
+                                if (isConfirm) {
+                                    const request = new XMLHttpRequest();
+                                    request.open("POST", "/cancelorder");
+                                    request.setRequestHeader("Content-Type", "application/json");
+                                    request.send(JSON.stringify({ id: id, product_id: product.id, quantity: product.quantity }));
+                                    request.addEventListener("load", () => {
+                                        swal({
+                                            title: "Order cancelled Successfully",
+                                            icon: "success",
+                                        });
+                                        productCard.remove();
+                                        if (productContainer.childElementCount === 0) {
+                                            productContainer.style.justifyContent = "center";
+                                            let h2 = document.createElement('h2');
+                                            h2.style.color = "red";
+                                            h2.textContent = "No Orders Found.";
+                                            productContainer.appendChild(h2);
+                                        }
+                                    })
+                                }
+                            })
+                    })
+                    productCard.appendChild(img);
+                    productCard.appendChild(h3);
+                    productCard.appendChild(h2);
+                    productCard.appendChild(quantity);
+                    productCard.appendChild(status);
+                    productCard.appendChild(date);
+                    if (product.status !== "Delivered") {
+                        productCard.appendChild(cancel);
+                    }
+                    productContainer.appendChild(productCard);
+                }
+                if (productContainer.childElementCount === 0) {
+                    productContainer.style.justifyContent = "center";
+                    let h2 = document.createElement('h2');
+                    h2.style.color = "red";
+                    h2.textContent = "No Orders Found.";
+                    productContainer.appendChild(h2);
+                }
+            }
+            );
+
+        </script>
+</body>
+
+</html>

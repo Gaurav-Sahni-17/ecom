@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Payment Form</title>
+    <link rel="stylesheet" href="paymentform.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<body>
+    <a href="/viewcart"><button id="showcart" style="margin-right:20px; width:75px;">Back</button></a>
+    <h2>Payment Information</h2>
+    <div id="form">
+        <div>
+            <label for="firstname">First Name:</label>
+            <input type="text" id="firstname" name="firstname">
+        </div>
+        <div>
+            <label for="lastname">Last Name:</label>
+            <input type="text" id="lastname" name="lastname">
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value=<%=email%>>
+        </div>
+        <div>
+            <label for="street">Street Address:</label>
+            <input type="text" id="street" name="street">
+        </div>
+        <div>
+            <label for="city">City:</label>
+            <select id="city" name="city">
+                <option value="ambala">Ambala</option>
+                <option value="faridabad">Faridabad</option>
+                <option value="gurgaon">Gurgaon</option>
+                <option value="hisar">Hisar</option>
+                <option value="yamunanagar">Yamunanagar</option>
+            </select>
+        </div>
+        <!-- <div>
+            <label for="district">District:</label>
+            <select id="district" name="district">
+                <option value="ambala">Ambala</option>
+                <option value="faridabad">Faridabad</option>
+                <option value="gurgaon">Gurgaon</option>
+                <option value="hisar">Hisar</option>
+                <option value="yamunanagar">Yamunanagar</option>
+            </select>
+        </div> -->
+        <div>
+            <label for="state">State:</label>
+            <select id="state" name="state">
+                <option value="haryana">Haryana</option>
+            </select>
+        </div>
+        <div>
+            <label for="pincode">PIN Code:</label>
+            <input type="number" id="pincode" name="pincode">
+        </div>
+        <div>
+            <label for="country">Country:</label>
+            <input type="text" id="country" name="country" value="India">
+        </div>
+        <div>
+            <button id="submit">Submit</button>
+        </div>
+    </div>
+    <script>
+        const countryinput = document.getElementById('country')
+        countryinput.disabled = true;
+        const emailinput = document.getElementById('email')
+        emailinput.disabled = true;
+        const submit = document.getElementById("submit");
+        submit.addEventListener("click", () => {
+            const fname = document.getElementById('firstname').value.trim();
+            const lname = document.getElementById('lastname').value.trim();
+            const email = emailinput.value.trim();
+            const street = document.getElementById('street').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const pincode = document.getElementById('pincode').value.trim();
+            const country = countryinput.value.trim();
+            if (fname === "" || lname === "" || street === "" || pincode === "") {
+                swal({
+                    title: "Please fill out all fields",
+                    icon: "warning",
+                });
+            }
+            else {
+                const request = new XMLHttpRequest();
+                request.open("POST", "/purchase");
+                request.setRequestHeader("Content-Type", "application/json");
+                request.send(JSON.stringify({ email: email, city: city, state: state }));
+                request.addEventListener("load", () => {
+                    swal({
+                        title: "Order Placed Successfully",
+                        icon: "success"
+                    }).then(function () {
+                        window.location = "/product";
+                    });
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>

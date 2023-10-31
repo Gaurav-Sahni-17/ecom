@@ -1,0 +1,16 @@
+module.exports=function(req,res,next)
+{
+    if(req.session.user===undefined)
+    {
+        next();
+    }
+    else{
+    if(req.session.user.role==="user")
+    {
+        next();
+    }
+    else{
+        res.redirect("/login");
+    }
+}
+}

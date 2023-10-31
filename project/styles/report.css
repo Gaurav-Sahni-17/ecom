@@ -1,0 +1,15 @@
+td select{
+     height:40px;
+     font-size:1.5rem;
+     padding:10px;
+}
+td button{
+    background-color: rgb(85, 179, 237);
+    color: white;
+    height:40px;
+    width:auto;
+    border-radius:10px;
+    padding:5px;
+    cursor: pointer;
+    border: none;
+}

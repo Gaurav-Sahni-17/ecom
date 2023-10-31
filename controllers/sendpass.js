@@ -1,0 +1,9 @@
+module.exports=function(req,res){
+    if(req.session.user)
+    {
+    res.render("password",{err:""})
+    }
+    else{
+        res.redirect("/login");
+    }
+}

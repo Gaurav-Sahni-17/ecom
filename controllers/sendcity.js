@@ -1,0 +1,9 @@
+module.exports=function(req,res){
+    if(req.session.user.role==="city")
+    {
+        res.render("city",{username:req.session.user.username});
+    }
+    else{
+        res.render("access");
+    }
+}

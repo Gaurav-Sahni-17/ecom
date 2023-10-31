@@ -1,0 +1,166 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.pagination{
+    display:inline-block;
+    width:auto;
+}
+.pagination-items{
+   display: inline;
+   padding:2px;
+}
+.pagination a{
+    text-decoration: none;
+    padding:2px;
+    color: black;
+    cursor:pointer;
+}
+.pagination a:hover{
+    text-decoration: none;
+}
+.pagination a:active{
+    color:blue;
+}
+.pagination a:disabled{
+    color:grey;
+}
+button {
+    height: 40px;
+    width: auto;
+    border: none;
+    text-decoration: none;
+    background-color: dodgerblue;
+    color: white;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#product-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.buttondiv {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.buttondiv button {
+    width: 50px;
+    font-size: 2rem;
+}
+
+#bill-container {
+    margin-right: 20px;
+    margin-top: 20px;
+    float: right;
+    display: flex;
+    clear: right;
+    height: 50px;
+    justify-content: space-between;
+    align-items: end;
+    flex-direction: column;
+}
+
+#cartheading {
+    text-align: center;
+    margin: 10px 0;
+}
+
+#load-more {
+    margin-left: 10px;
+    color: white;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    display: inline-block;
+    height: auto;
+    margin: 10px;
+    width: 250px;
+}
+
+.product-card button {
+    color: white;
+}
+
+.product-card div {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.product-image {
+    width: 100%;
+    height: 200px;
+}
+
+#showcart {
+    float: right;
+    height: 40px;
+    width: auto;
+    margin-top: 10px;
+    border: none;
+    text-decoration: none;
+    background-color: blue;
+    color: white;
+    display: block;
+    clear: right;
+    cursor: pointer;
+}
+#selectbox{
+    width:15%;
+    margin:0 auto;
+}
+#select{
+    width:auto;
+    font-size:1.5rem;
+    padding:2px;
+}
+#purchase {
+    border: none;
+    text-decoration: none;
+    background-color: blue;
+    color: white;
+}
+
+#find {
+    width: 40px;
+}
+
+#searchbox {
+    float: right;
+    margin-top: 10px;
+    margin-right: 20px;
+}
+
+#search {
+    height: 35px;
+    border: none;
+    border-bottom: 1px solid grey;
+}
+
+#clear,
+#order {
+    position: fixed;
+    height: 40px;
+    width: auto;
+    right: 10px;
+    bottom: 20px;
+    border: none;
+    text-decoration: none;
+    background-color: blue;
+    color: white;
+    display: block;
+    cursor: pointer;
+}
+
+#cancel {
+    width: 100%;
+    text-align: center;
+    background-color: red;
+}

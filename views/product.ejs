@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Page</title>
+    <link rel="stylesheet" href="product.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+        integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <%- include("partials/header",{username:username} ) %>
+        <!-- <div id="searchbox">
+            <input type="search" id="search" placeholder="Search">
+            <button id="find"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div> -->
+        <a href="/viewcart"><button id="showcart">View Cart</button></a>
+        <div id="product-container">
+        </div>
+        <!-- <button id="load-more">Load More Products</button> -->
+        <a href="/order"><button id="order">My Orders</button></a>
+        <div id="selectbox">
+            <select id="select">
+                <option value="5">5</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+            <div class="pagination" id="pagination">
+                <!-- <a class="pagination-items">&laquo;</a>
+                <a class="pagination-items">1</a>
+                <a class="pagination-items">2</a>
+                <a class="pagination-items">3</a>
+                <a class="pagination-items">...</a>
+                <a class="pagination-items">500</a>
+                <a class="pagination-items">&raquo;</a> -->
+            </div>
+        </div>
+        <script>
+            let first = 0,lastpage=0,active=1;
+            let totalproducts,numberofpages;
+            const req=new XMLHttpRequest();
+            req.open("GET","/sendtotalproducts");
+            req.send();
+            req.addEventListener("load",()=>{
+                totalproducts=parseInt(req.response);
+                createPagination();
+            })
+            let pagination=document.getElementById("pagination");
+            function createPagination(){
+                let select = document.getElementById("select");
+                let productperPage=parseInt(select.value);
+                numberofpages=Math.ceil(totalproducts/productperPage);
+                if(numberofpages<6){
+                for(let i=1;i<=numberofpages;i++){
+                   let a=document.createElement("a");
+                   a.addEventListener("click",loadPage);
+                   a.textContent=i;
+                   a.setAttribute("class","pagination-item");
+                   a.setAttribute("id","link"+i);
+                   pagination.appendChild(a);
+                }
+                }
+                else{
+                    let left=document.createElement("a");
+                  left.addEventListener("click",loadLeftPage);
+                   left.innerHTML="&laquo;";
+                   left.setAttribute("class","pagination-item");
+                   left.setAttribute("id","left");
+                   left.style.display="none";
+                   pagination.appendChild(left);
+                    for(let i=1;i<=3;i++){
+                   let a=document.createElement("a");
+                   a.addEventListener("click",loadPage);
+                   a.textContent=i;
+                   a.setAttribute("class","pagination-item");
+                   a.setAttribute("id","link"+i);
+                   pagination.appendChild(a);
+                }
+                let a=document.createElement("a");
+                   a.textContent="...";
+                   a.setAttribute("class","pagination-item");
+                   a.setAttribute("id","link4");
+                   pagination.appendChild(a);
+                   let b=document.createElement("a");
+                   b.disabled=true;
+                   b.textContent=numberofpages;
+                   b.setAttribute("class","pagination-item");
+                   b.setAttribute("id","link5");
+                   pagination.appendChild(b);
+                   let right=document.createElement("a");
+                 right.addEventListener("click",loadRightPage);
+                   right.innerHTML="&raquo;";
+                   right.setAttribute("class","pagination-item");
+                   right.setAttribute("id","right");
+                   pagination.appendChild(right);
+                }
+                let activepage=document.getElementById("link"+active);
+                activepage.style.color="blue";
+            }
+            function loadPage(e){
+                if("link"+active===e.target.id){
+                    return;
+                }
+                let activepage=document.getElementById("link"+active);
+                activepage.style.color="black";
+                active=e.target.id.split("link")[1];
+                activepage=document.getElementById("link"+active);
+                activepage.style.color="blue";
+                if(active==1 && document.getElementById("link1").textContent==="1")
+                {
+                    document.getElementById('left').style.display="none";
+                }
+                else{
+                    document.getElementById('left').style.display="inline";
+                }
+                if(active==5){
+                    document.getElementById('right').style.display="none";
+                }
+                else{
+                    document.getElementById('right').style.display="inline";
+                }
+                let value=parseInt(activepage.textContent);
+                let select = document.getElementById("select");
+                let productperPage=parseInt(select.value);
+                first=((value-1)*productperPage);
+                last=productperPage;
+                productContainer.innerHTML="";
+                sendRequest();
+                if(e.target.id==="last")
+                {
+                    // loadMoreButton.style.display="none";
+                    lastpage=1;
+                }
+            }
+            function loadRightPage(){
+                let link3=document.getElementById("link3");
+                let link4=document.getElementById("link4");
+                let activepage=document.getElementById("link"+active);
+                document.getElementById('left').style.display="inline";
+                if(active==3 && (link3.textContent<(numberofpages-3)))
+                {
+                        for(i=1;i<=3;i++)
+                        {
+                            let a=document.getElementById("link"+i).textContent;
+                            a=parseInt(a)+1;
+                            document.getElementById("link"+i).textContent=a;   
+                        }
+                }
+                 else if(active==3 && link3.textContent==(numberofpages-3) && link4.textContent==="..." )
+                    {
+                        for(i=1;i<=3;i++)
+                        {
+                            let a=document.getElementById("link"+i).textContent;
+                            a=parseInt(a)+1;
+                            document.getElementById("link"+i).textContent=a;                            
+                        }
+                        document.getElementById("link4").textContent=(numberofpages-1);
+                        document.getElementById("link4").addEventListener("click",loadPage);
+                    }
+                else{
+                     activepage.style.color="black";
+                     active=parseInt(active)+1;
+                     if(active===5){
+                         document.getElementById('right').style.display="none";
+                     }
+                     activepage=document.getElementById("link"+active);
+                     activepage.style.color="blue";
+                }
+                 let value=parseInt(activepage.textContent);
+                let select = document.getElementById("select");
+                let productperPage=parseInt(select.value);
+                first=((value-1)*productperPage);
+                last=productperPage;
+                productContainer.innerHTML="";
+                sendRequest();
+                }
+                function loadLeftPage(e){
+                    let link1=document.getElementById("link1");
+                let link4=document.getElementById("link4");
+                let activepage=document.getElementById("link"+active);
+                document.getElementById('right').style.display="inline";
+                if(link1.textContent==2 && active==1){
+                    e.target.style.display="none";
+                }
+                if(active==1 && link4.textContent!=="...")
+                {
+                    for(i=1;i<=3;i++)
+                        {
+                            let a=document.getElementById("link"+i).textContent;
+                            a=a-1;
+                            document.getElementById("link"+i).textContent=a;   
+                        }
+                        link4.textContent="...";
+                }
+                else if(active==1){
+                    for(i=1;i<=3;i++)
+                        {
+                            let a=document.getElementById("link"+i).textContent;
+                            a=a-1;
+                            document.getElementById("link"+i).textContent=a;   
+                        }
+                }
+                else{
+                    activepage.style.color="black";
+                     active=active-1;
+                     activepage=document.getElementById("link"+active);
+                     activepage.style.color="blue";
+                     if(activepage.textContent==1){
+                        e.target.style.display="none";
+                     }
+                }
+                let value=parseInt(activepage.textContent);
+                let select = document.getElementById("select");
+                let productperPage=parseInt(select.value);
+                first=((value-1)*productperPage);
+                last=productperPage;
+                productContainer.innerHTML="";
+                sendRequest();
+                }
+            let selectproduct = document.getElementById("select");
+            let last = parseInt(selectproduct.value);
+            // const loadMoreButton = document.getElementById("load-more");
+            const productContainer = document.getElementById("product-container");
+            const search = document.getElementById('search');
+            sendRequest();
+            function sendRequest() {
+                const request = new XMLHttpRequest();
+                request.open("POST", "/getproducts");
+                request.setRequestHeader("Content-Type", "application/json")
+                request.send(JSON.stringify({ start: first, end: first + last }));
+                request.addEventListener("load", () => {
+                    const products = JSON.parse(request.response);
+                    showproducts(products);
+                })
+            }
+            selectproduct.addEventListener("change", (e) => {
+                active=1;
+                    productContainer.innerHTML = "";
+                    first = 0;
+                    last = parseInt(e.target.value);
+                    sendRequest();
+                    pagination.innerHTML="";
+                    createPagination();
+            })
+            // loadMoreButton.addEventListener("click", () => {
+            //     first = first + last;
+            //     if (search.value == "") {
+            //         sendRequest();
+            //     }
+            //     else {
+            //         searchproducts(search.value);
+            //     }
+            // });
+            function showproducts(products) {
+                // if(lastpage===0){
+                // loadMoreButton.style.display = "block";
+                // }
+                lastpage=0;
+                for (let i = 0; i < last; i++) {
+                    if (i >= products.length) {
+                        // loadMoreButton.style.display = "none";
+                        return;
+                    }
+
+                    const product = products[i];
+                    const productCard = document.createElement("div");
+                    productCard.classList.add("product-card");
+                    let img = document.createElement("img");
+                    img.src = product.image;
+                    img.setAttribute("class", "product-image");
+                    let h3 = document.createElement("h3");
+                    h3.textContent = product.name;
+                    let h2 = document.createElement("h2");
+                    h2.textContent = product.price + "/-";
+                    let quantity = document.createElement("p");
+                    if (product.quantity === 0) {
+                        quantity.textContent = "Out of Stock";
+                    }
+                    else {
+                        quantity.textContent = "Quantity:" + product.quantity;
+                    }
+                    if (product.quantity < 5) {
+                        quantity.style.color = "red";
+                    }
+                    let div = document.createElement('div');
+                    let button1 = document.createElement("button");
+                    if (product.quantity === 0) {
+                        button1.disabled = true;
+                        button1.style.backgroundColor = "grey";
+                    }
+                    button1.textContent = "Add to Cart";
+                    button1.addEventListener("click", () => {
+                        const request = new XMLHttpRequest();
+                        request.open("POST", "/addtocart");
+                        request.setRequestHeader("Content-type", "application/json");
+                        request.send(JSON.stringify({ id: product.id }));
+                        request.addEventListener("load", () => {
+                            if (request.responseText == "done") {
+                                swal({
+                                    title: "Added Successfully",
+                                    icon: "success",
+                                });
+                            }
+                            else if (request.responseText == "not") {
+                                swal({
+                                    title: "Already in Cart",
+                                    icon: "warning",
+                                });
+                            }
+                            else {
+                                location.href = "/login";
+                            }
+                        })
+                    })
+                    let button2 = document.createElement("button");
+                    button2.textContent = "View Details";
+                    button2.addEventListener("click", () => {
+                        swal({
+                            title: "Descripton",
+                            text: product.description,
+                        });
+                    })
+                    div.appendChild(button1);
+                    div.appendChild(button2);
+                    productCard.appendChild(img);
+                    productCard.appendChild(h3);
+                    productCard.appendChild(h2);
+                    productCard.appendChild(quantity);
+                    productCard.appendChild(div);
+                    productContainer.appendChild(productCard);
+                }
+            }
+            // const find = document.getElementById("find");
+            // find.addEventListener("click", () => {
+            //     productContainer.innerHTML = "";
+            //     // loadMoreButton.style.display = "block";
+            //     first = 0;
+            //     let value = search.value.trim();
+            //     if (value !== "") {
+            //         searchproducts(value);
+            //     }
+            //     else {
+            //         sendRequest();
+            //     }
+            // })
+            // search.addEventListener('keyup', (e) => {
+            //     productContainer.innerHTML = "";
+            //     // loadMoreButton.style.display = "block";
+            //     first = 0;
+            //     let value = e.target.value.trim();
+            //     if (value !== "") {
+            //         searchproducts(value);
+            //     }
+            //     else {
+            //         sendRequest();
+            //     }
+            // })
+            function searchproducts(value) {
+                const request = new XMLHttpRequest();
+                request.open("POST", "/search");
+                request.setRequestHeader("Content-Type", "application/json")
+                request.send(JSON.stringify({ value: value, start: first, end: first + last }));
+                request.addEventListener("load", () => {
+                    const products = JSON.parse(request.response);
+                    if (products.length) {
+                        showproducts(products);
+                    }
+                    else if (productContainer.childElementCount === 0) {
+                        productContainer.innerHTML = "<h1>No Match Found.</h1>";
+                        // loadMoreButton.style.display = "none";
+                        first = 0;
+                    }
+                    // else {
+                    //     loadMoreButton.style.display = "none";
+                    // }
+                })
+            }
+        </script>
+</body>
+
+</html>

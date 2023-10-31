@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Page</title>
+    <link rel="stylesheet" href="product.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<body>
+    <%- include("partials/header",{username:username} ) %>
+        <h1 id="cartheading">My Cart</h1>
+        <a href="/product"><button id="showcart" style="margin-right:20px; width:75px;">Back</button></a>
+        <div id="bill-container">
+            <h3>No. of products=<span id="noofproducts">0</span></h3>
+            <h3>Total Bill=<span id="totalbill">0</span>/-</h3>
+            <a href="/paymentform"><button id="purchase">Purchase Cart</button></a>
+        </div>
+        <div id="product-container">
+        </div>
+        <button id="clear">Clear Cart</button>
+        <script>
+            const purchase = document.getElementById("purchase");
+            let clear = document.getElementById("clear");
+            let Total = document.getElementById('totalbill');
+            let Numbers = document.getElementById('noofproducts');
+            let bill = 0, noofproducts = 0;
+            const productContainer = document.getElementById("product-container");
+            const request = new XMLHttpRequest();
+            request.open("GET", "/getcart");
+            request.send();
+            request.addEventListener("load", () => {
+                const products = JSON.parse(request.response);
+                for (let i = 0; i < products.length; i++) {
+                    const product = products[i];
+                    noofproducts = noofproducts + product.quantity;
+                    bill = bill + product.price * product.quantity;
+                    const productCard = document.createElement("div");
+                    productCard.classList.add("product-card");
+                    let img = document.createElement("img");
+                    img.src = product.image;
+                    img.setAttribute("class", "product-image");
+                    let h3 = document.createElement("h3");
+                    h3.textContent = product.name;
+                    let h2 = document.createElement("h2");
+                    h2.textContent = product.price + "/-";
+                    let quantity = document.createElement("span");
+                    let buttondiv = document.createElement('div');
+                    buttondiv.setAttribute("class", "buttondiv");
+                    let add = document.createElement("button");
+                    let remove = document.createElement("button");
+                    if (product.quantity <= product.stock) {
+                        quantity.textContent = product.quantity;
+                        add.textContent = "+";
+                        remove.textContent = "-";
+                        buttondiv.appendChild(remove);
+                        buttondiv.appendChild(quantity);
+                        buttondiv.appendChild(add);
+                    }
+                    else {
+                        buttondiv.innerHTML = "<h4>No stock Available</h4>";
+                        buttondiv.style.color = "red";
+                        purchase.disabled = true;
+                        purchase.style.backgroundColor = "grey";
+                    }
+                    let p = document.createElement('p');
+                    let div = document.createElement('div');
+                    let button1 = document.createElement("button");
+                    button1.textContent = "Remove From Cart";
+                    button1.addEventListener("click", (e) => {
+                        const request = new XMLHttpRequest();
+                        request.open("POST", "/removefromcart");
+                        request.setRequestHeader("Content-type", "application/json");
+                        request.send(JSON.stringify({ id: product.id }));
+                        request.addEventListener("load", () => {
+                            let res = JSON.parse(request.response);
+                            swal({
+                                title: "Removed Successfully",
+                                icon: "success",
+                            });
+                            console.log(res);
+                            Numbers.textContent = parseInt(Numbers.textContent) - (res.quantity);
+                            Total.textContent = parseInt(Total.textContent) - (res.quantity * res.price);
+                            e.target.parentNode.parentNode.remove();
+                        })
+                    })
+                    add.addEventListener("click", () => {
+                        const request = new XMLHttpRequest();
+                        request.open("POST", "/increase");
+                        request.setRequestHeader("Content-type", "application/json");
+                        request.send(JSON.stringify({ id: product.id }));
+                        request.addEventListener("load", () => {
+                            if (JSON.parse(request.response) !== parseInt(quantity.textContent)) {
+                                quantity.textContent = JSON.parse(request.responseText);
+                                Numbers.textContent = parseInt(Numbers.textContent) + 1;
+                                Total.textContent = parseInt(Total.textContent) + product.price;
+                            }
+                            else {
+                                swal({
+                                    title: "No more stock Available.",
+                                    icon: "warning",
+                                });
+                            }
+                        })
+                    })
+                    remove.addEventListener("click", () => {
+                        if (parseInt(quantity.textContent) > 1) {
+                            const request = new XMLHttpRequest();
+                            request.open("POST", "/decrease");
+                            request.setRequestHeader("Content-type", "application/json");
+                            request.send(JSON.stringify({ id: product.id }));
+                            request.addEventListener("load", () => {
+                                if (JSON.parse(request.response) !== parseInt(quantity.textContent)) {
+                                    quantity.textContent = JSON.parse(request.responseText);
+                                    Numbers.textContent = parseInt(Numbers.textContent) - 1;
+                                    Total.textContent = parseInt(Total.textContent) - product.price;
+                                }
+                            })
+                        }
+                        else {
+                            swal({
+                                title: "Minimum Limit Reached",
+                                icon: "warning",
+                            });
+                        }
+                    })
+                    let button2 = document.createElement("button");
+                    button2.textContent = "View Details";
+                    button2.addEventListener("click", () => {
+                        swal({
+                            title: "Descripton",
+                            text: product.description,
+                        });
+                    })
+                    div.appendChild(button1);
+                    div.appendChild(button2);
+                    productCard.appendChild(img);
+                    productCard.appendChild(h3);
+                    productCard.appendChild(h2);
+                    productCard.appendChild(buttondiv);
+                    productCard.appendChild(p);
+                    productCard.appendChild(div);
+                    productContainer.appendChild(productCard);
+                }
+                if (productContainer.childElementCount === 0) {
+                    purchase.disabled = true;
+                    clear.disabled = true;
+                    purchase.style.backgroundColor = "grey";
+                    clear.style.backgroundColor = "grey";
+                    productContainer.style.justifyContent = "center";
+                    let h2 = document.createElement('h2');
+                    h2.style.color = "red";
+                    h2.textContent = "Cart  currenly Empty.";
+                    productContainer.appendChild(h2);
+                }
+                Total.textContent = bill;
+                Numbers.textContent = noofproducts;
+            }
+            );
+            clear.addEventListener("click", () => {
+                swal({
+                    title: "Are you sure?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    buttons: ["No", "Yes"],
+                    dangerMode: true
+                }).then(
+                    function (isConfirm) {
+                        if (isConfirm) {
+                            const request = new XMLHttpRequest();
+                            request.open("GET", "/clearcart");
+                            request.send();
+                            request.addEventListener("load", () => {
+                                swal({
+                                    title: "Cart Cleared Successfully",
+                                    icon: "success",
+                                });
+                                Total.textContent = 0;
+                                Numbers.textContent = 0;
+                                productContainer.innerHTML = "";
+                                productContainer.style.justifyContent = "center";
+                                let h2 = document.createElement('h2');
+                                h2.style.color = "red";
+                                h2.textContent = "Cart currenly Empty.";
+                                productContainer.appendChild(h2);
+                                purchase.disabled = true;
+                                clear.disabled = true;
+                                purchase.style.backgroundColor = "grey";
+                                clear.style.backgroundColor = "grey";
+                            })
+                        }
+                    })
+            })  
+        </script>
+</body>
+
+</html>
